@@ -1,6 +1,6 @@
 {
-	"name": "A Grande Roda",
-	"short_name": "A Grande Roda",
+	"name": "Ensino Superior",
+	"short_name": "Ensino Superior",
 	"start_url": "/a-grande-roda",
 	"id": "/a-grande-roda",
 	"dir": "ltr",
@@ -9,7 +9,7 @@
 	"display": "standalone",
 	"background_color": "#f8f9fc",
 	"theme_color": "#015a6a",
-	"description": "Sistema de controle para A Grande Roda",
+	"description": "Sistema de controle para Ensino Superior",
 	"icons": [
 		{
 			"src": "favicon-36x36.png",

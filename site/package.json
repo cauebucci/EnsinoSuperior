@@ -6,7 +6,7 @@
     "start": "node src/app",
     "sass": "sass scss/sb-admin-2.scss public/css/style.min.css --style=compressed"
   },
-  "description": "Sistema de controle para A Grande Roda",
+  "description": "Sistema de controle para Ensino Superior",
   "author": {
     "name": "ESPM"
   },

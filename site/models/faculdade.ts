@@ -95,14 +95,83 @@ class Usuario {
 		return (lista || []);
 	}
 
+    public static async buscar(id: number): Promise<Faculdade[]> {
+		let lista: Faculdade[] = null;
+
+		await app.sql.connect(async (sql) => {
+			lista = await sql.query("select * from faculdades where CO_IES = ?", [id]) as Faculdade[];
+		});
+
+		return (lista || []);
+	}
+
 	public static async obterFaculdades(): Promise<Faculdade[]> {
 		let lista: Faculdade[] = null;
 
 		await app.sql.connect(async (sql) => {
-			lista = await sql.query("select distinct CO_IES, NO_IES from faculdades order by NO_IES;") as Faculdade[];
+			lista = await sql.query("select distinct CO_IES, SG_IES, NO_IES from faculdades order by NO_IES;") as Faculdade[];
 		});
 
 		return (lista || []);
+	}
+
+    public static async buscarEstados(): Promise<Faculdade[]> {
+		let lista: Faculdade[] = null;
+
+		await app.sql.connect(async (sql) => {
+			lista = await sql.query("select distinct NO_UF_IES from faculdades order by NO_UF_IES;") as Faculdade[];
+		});
+
+		return (lista || []);
+	}
+
+    public static async buscarMunicipios(): Promise<Faculdade[]> {
+		let lista: Faculdade[] = null;
+
+		await app.sql.connect(async (sql) => {
+			lista = await sql.query("select distinct NO_MUNICIPIO_IES from faculdades order by NO_MUNICIPIO_IES;") as Faculdade[];
+		});
+
+		return (lista || []);
+	}
+
+    public static async filtrar(estado: string, municipio: string, curso: string): Promise<Faculdade[]> {
+		let lista: Faculdade[] = null;
+
+		
+		let where = "";
+		let parametros: any[] = [];
+
+		if (estado) {
+			if (where)
+				where += " AND ";
+			where += "F.NO_UF_IES = ?";
+			parametros.push(estado);
+		}
+
+		
+		if (municipio) {
+			if (where)
+				where += " AND ";
+			where += "F.NO_MUNICIPIO_IES = ?";
+			parametros.push(municipio);
+		}
+
+		if (curso) {
+			if (where)
+				where += " AND ";
+			where += "C.NO_CURSO = ?";
+			parametros.push(curso);
+		}
+		
+		if (where)
+			where = " WHERE " + where + " order by NO_IES";
+
+		await app.sql.connect(async (sql) => {
+			lista = await sql.query("select distinct F.CO_IES, F.NO_UF_IES, F.NO_MUNICIPIO_IES, F.SG_IES, F.NO_IES from faculdades F inner join Cursos C on C.CO_IES = F.CO_IES"  + where, parametros) as Faculdade[];
+		});
+
+		return lista;
 	}
 
 	public static async obter(CO_IES: number, NU_ANO_CENSO: number): Promise<Faculdade> {

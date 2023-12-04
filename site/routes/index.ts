@@ -1,5 +1,9 @@
 ﻿import app = require("teem");
 import Usuario = require("../models/usuario");
+import Faculdade = require("../models/faculdade");
+import Curso =  require("../models/curso");
+import estados = require("../models/estado");
+
 
 class IndexRoute {
 	public static async index(req: app.Request, res: app.Response) {
@@ -10,7 +14,14 @@ class IndexRoute {
 			res.render("index/index", {
 				layout: "layout-sem-form",
 				titulo: "Dashboard",
-				usuario: u
+				nomesFaculdades: await Faculdade.obterFaculdades(),
+				faculdades: await Faculdade.listar(),
+				usuario: u,
+				datatables: true, 
+				xlsx: true, 
+				Cursos: await Curso.obterCursos(),
+				estados: estados.lista,
+				cidades: true,
 			});
 	}
 
