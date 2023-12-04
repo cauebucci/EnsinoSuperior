@@ -1,0 +1,101 @@
+---
+title: "Projeto"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    social: menu
+    source_code: embed
+runtime: shiny
+---
+
+```{r global, include=FALSE}
+# load data in 'global' chunk so it can be shared by all users of the dashboard
+
+library(flexdashboard)
+library(shiny)
+library(tidyverse)
+
+library(readxl)
+
+setwd("/Users/cauebucci/Documents/R")
+
+dados = read_excel("Cursos.xlsx")
+```
+
+
+```{r}
+# Reactive that returns the whole dataset if there is no brush
+selectedData <- reactive({
+  data <- brushedPoints(dados, input$plot_brush)
+  if (nrow(data) == 0)
+    data <- dados
+  data
+})
+```
+
+Column {data-width=600}
+-----------------------------------------------------------------------
+
+### Analise entre quantidade de ingressados e concluidos por grau acadêmico {data-width=600}
+
+```{r}
+library(ggplot2)
+
+
+    
+dados$TP_GRAU_ACADEMICO <- replace(dados$TP_GRAU_ACADEMICO, 
+                                   dados$TP_GRAU_ACADEMICO == 1, "Bacharelado")
+dados$TP_GRAU_ACADEMICO <- replace(dados$TP_GRAU_ACADEMICO, 
+                                   dados$TP_GRAU_ACADEMICO == 2, "Licenciatura")
+dados$TP_GRAU_ACADEMICO <- replace(dados$TP_GRAU_ACADEMICO, 
+                                   dados$TP_GRAU_ACADEMICO == 3, "Tecnológico")
+dados$TP_GRAU_ACADEMICO <- replace(dados$TP_GRAU_ACADEMICO, 
+                                   dados$TP_GRAU_ACADEMICO == 4, "Bacharelado e Licenciatura")
+
+cores <- c("Bacharelado" = "blue", 
+           "Licenciatura" = "green", 
+           "Tecnológico" = "red", 
+           "Bacharelado e Licenciatura" = "purple")
+
+ggplot(dados, aes(x = QT_ING, y = QT_CONC, color = TP_GRAU_ACADEMICO)) +
+  geom_point(size = 3) +
+  labs(x = "Quantidade ingressada",
+       y = "Quantidade concluída",
+       color = "Grau Acadêmico") + 
+  theme_classic()
+
+
+
+
+```
+
+Column {data-width=600}
+-----------------------------------------------------------------------
+
+### Ingressantes por gênero
+
+```{r}
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+dados$indice = seq_len(nrow(dados))
+
+
+dados2 = dados %>%
+  summarise(Total_MASC = sum(QT_ING_MASC),
+            Total_FEM = sum(QT_ING_FEM))
+
+
+dados3 = dados2 %>%
+  pivot_longer(cols = c(Total_MASC, Total_FEM), names_to = "Gênero", values_to = "Total")
+
+
+ggplot(dados3, aes(x = Gênero, y = Total, fill = Gênero)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total de Ingressantes por Gênero",
+       fill = "Gênero") +
+  scale_fill_manual(values = c("#3498db", "#e74c3c")) 
+
+```
